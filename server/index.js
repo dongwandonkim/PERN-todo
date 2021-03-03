@@ -18,7 +18,7 @@ app.post('/todos', async (req, res) => {
       [description]
     );
 
-    res.json(newTodo.rows[0]);
+    res.json(newTodo.rows);
   } catch (error) {
     console.error(err.message);
   }
@@ -28,7 +28,7 @@ app.post('/todos', async (req, res) => {
 app.get('/todos', async (req, res) => {
   try {
     const allTodos = await pool.query('SELECT * FROM todo');
-    res.json(allTodos.rows[0]);
+    res.json(allTodos.rows);
   } catch (error) {
     console.error(error.message);
   }
@@ -63,6 +63,17 @@ app.put('/todos/:id', async (req, res) => {
 });
 
 //delete a todo
+app.delete('/todos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteTodo = await pool.query('DELETE FROM todo WHERE todo_id = $1', [
+      id,
+    ]);
+    res.json('todo was deleted!');
+  } catch (error) {
+    console.log(error.message);
+  }
+});
 
 const PORT = 5000;
 app.listen(PORT, () => {
