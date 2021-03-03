@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import EditTodo from './EditTodo';
 
 const ListTodos = () => {
   const [todos, setTodos] = useState([]);
@@ -6,13 +7,22 @@ const ListTodos = () => {
     try {
       const response = await fetch('http://localhost:5000/todos');
       const jsonData = await response.json();
-
       setTodos(jsonData);
     } catch (error) {
       console.error(error.message);
     }
   };
-
+  const deleteTodo = async (id) => {
+    try {
+      const deleteTodo = await fetch(`http://localhost:5000/todos/${id}`, {
+        method: 'DELETE',
+      });
+      console.log(deleteTodo);
+      setTodos(todos.filter((todo) => todo.todo_id !== id));
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
   useEffect(() => {
     getTodos();
   }, []);
@@ -28,15 +38,20 @@ const ListTodos = () => {
           </tr>
         </thead>
         <tbody>
-          {todos.map((data, idx) => {
+          {todos.map((data) => {
             return (
-              <tr key={idx}>
+              <tr key={data.todo_id}>
                 <td>{data.description}</td>
                 <td>
-                  <button className="btn btn-info">Edit</button>
+                  <EditTodo todo={data} />
                 </td>
                 <td>
-                  <button className="btn btn-danger">Delete</button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => deleteTodo(data.todo_id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             );
